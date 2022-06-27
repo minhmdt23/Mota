@@ -1,0 +1,95 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+	
+	<style>
+      	#intro {
+        	background-image: url("{% static 'members/login_background/login_background.jpg' %}");
+        	height: 100vh;
+      	}
+      	.form-outline .form-control:focus~.form-notch .form-notch-leading {
+		    border-color: #000000;
+		    box-shadow: -1px 0 0 0 #000000, 0 1px 0 0 #000000, 0 -1px 0 0 #000000;
+		}
+		.form-outline .form-control:focus~.form-notch .form-notch-middle {
+		    border-color: #000000;
+		    box-shadow: 0 1px 0 0 #000000;
+		    border-top: 1px solid transparent;
+		}
+		.form-outline .form-control:focus~.form-notch .form-notch-trailing {
+		    border-color: #000000;
+		    box-shadow: 1px 0 0 0 #000000, 0 -1px 0 0 #000000, 0 1px 0 0 #000000;
+		}
+		.form-outline .form-control:focus~.form-label {
+		    color: #000000;
+		}
+
+    </style>
+
+    <!-- Background image -->
+    <div id="intro" class="bg-image shadow-2-strong">
+      <div class="mask d-flex align-items-center h-100" style="background-color: rgba(0, 0, 0, 0.8);">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-xl-5 col-md-8">
+              <form action="#" method="post" class="bg-white  rounded-5 shadow-5-strong p-5">
+              	{% csrf_token %}
+              	<h1 class="text-center mb-5">Đăng nhập</h1>
+                <!-- Email input -->
+                <div class="form-outline mb-3">
+                  <input type="text" id="username" class="form-control" name="username" />
+                  <label class="form-label" for="username">Tài khoảng</label>
+                </div>
+
+                <!-- Password input -->
+                <div class="form-outline mb-3">
+                  <input type="password" id="password" class="form-control" name="password"/>
+                  <label class="form-label" for="password">Mật khẩu</label>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-dark btn-block">Đăng nhập</button>
+                <a class="btn btn-outline-dark btn-block" href="{% url 'register' %}">Đăng ký</a>
+
+                <section class="mb-4">
+                	<div class="text-center">
+				      	<!-- Facebook -->
+				      	<a class="btn btn-link btn-floating btn-lg text-dark m-1" href="#!" role="button" data-mdb-ripple-color="dark" ><i class="fab fa-facebook-f"></i></a>
+				   
+				      	<!-- Google -->
+				      	<a class="btn btn-link btn-floating btn-lg text-dark m-1" href="#!" role="button" data-mdb-ripple-color="dark" ><i class="fab fa-google"></i></a>
+			      	</div>
+    			</section>
+    			{% if messages %}
+	              	{% for message in messages %}
+	              	<div class="alert alert-dark" role="alert">
+					  {{ message }}
+					</div>
+	              	{% endfor %}
+	              {% endif %}
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script type="text/javascript">
+
+	window.setTimeout( function() {
+	  $('.alert').alert('close');	
+	}, 3000);
+
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+

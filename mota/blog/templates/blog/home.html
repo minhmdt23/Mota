@@ -1,0 +1,67 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+	<style type="text/css">
+		#header-img{
+			background-image: url("{% static 'blog/images/home-background.jpg' %}");
+		}
+	</style>
+
+	<div id="header-img" class="p-5 text-center bg-image"style="height: 100vh;">
+	    <div class="mask" style="background-color: rgba(0, 0, 0, 0.6);">
+	      <div class="d-flex justify-content-center align-items-center h-100">
+	        <div class="text-white">
+	          <h1 class="display-1">MOTA</h1>
+	          <h4 class="mb-3">Sưu tầm kiến thức cá nhân</h4>
+	          <a class="btn btn-outline-light btn-lg" href="{% url 'post' %}" role="button">CÁC BÀI VIẾT</a>
+	        </div>
+	      </div>
+	    </div>
+	</div>
+
+	<div class="container mt-5">
+	  	<!--Section: Content-->
+	  	<section class="dark-grey-text">
+		    <!-- Section heading -->
+		    <h2 class="text-center font-weight-bold mb-5">Bài viết gần đây</h2>
+		    {% for post in posts %}
+			  	<!-- Grid row -->
+			    <div class="row align-items-center">
+
+			      	<!-- Grid column -->
+			      	<div class="col-lg-5 col-xl-4">
+
+				        <!-- Featured image -->
+				        <div class="view overlay rounded z-depth-1-half mb-lg-0 mb-4">
+				        	<a href="{% url 'post_detail' post.id %}">
+				          		<img class="img-fluid" src="{{ post.image.url }}" alt="Sample image">
+				          	</a>
+				        </div>
+
+			      	</div>
+			      <!-- Grid column -->
+
+			      <!-- Grid column -->
+			      	<div class="col-lg-7 col-xl-8">
+				        <!-- Post title -->
+				        <a href="{% url 'post_detail' post.id %}">
+				        	<h4 class="font-weight-bold mb-3 black-text"><strong>{{ post.title }}</strong></h4>
+				        </a>
+				        <!-- Excerpt -->
+				        <p class="dark-grey-text">{{ post.decription }}</p>
+				        <!-- Post data -->
+				        <p>Đăng bởi <a class="font-weight-bold">{{ post.author.username }}</a>,  {{ post.date_fomat_d_m_y }} </p>
+				        <!-- Read more button --> 
+
+				        <a class="btn btn-lg btn-rounded" href="{% url 'post_detail' post.id %}"><b>Chi tiết</b></a>
+			      	</div>
+			      	<!-- Grid column -->
+			    </div>
+			    <!-- Grid row -->
+
+			    <hr class="my-5">
+			{% endfor %}
+		</section>
+	</div>
+
+{% endblock %}

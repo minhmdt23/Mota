@@ -1,0 +1,39 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+<!-- Page Content -->
+<div class="container">
+
+  	<h1 class="fw-light text-center text-lg-start mt-4 mb-0">Lấy đường dẫn ảnh</h1>
+  	<small>(Nhấn vào ảnh để lấy coppy đường dẫn)</small>
+
+  	<hr class="mt-2">
+
+  	<div class="row text-center text-lg-start">
+		{% for post in post %}
+		  	<b class="mt-5">{{ post.title }}</b><br>
+		  	{% for image in post.postimage_set.all %}
+			    <div class="col-lg-3 col-md-4 col-6 text-center">
+			      	<a href="#!" class="mb-4 h-100 get_link" link = "{{ image.image.url }}">
+			        	<img style="height: 200px;" data-mdb-placement="bottom" class="img-fluid img-thumbnail" src="{{ image.image.url }}" alt="" data-mdb-toggle="tooltip" title="{{ image.image.url }}">
+			      	</a>
+			    </div>
+		  	{% endfor %}
+		{% endfor %}
+ 	</div>
+</div>
+
+
+
+<script>
+
+	$(".get_link").bind('click', function(){
+		var link = $(this).attr('link');
+		navigator.clipboard.writeText(link);
+
+	});
+</script>
+
+
+
+{% endblock %}

@@ -1,0 +1,212 @@
+
+
+<!-- COMMENT BOX -->
+<form method="POST" id="pub_comment">
+	{% csrf_token %}
+    <div class="card-footer py-3 border-0 mb-5" style="background-color: #f8f9fa;">
+        <div class="d-flex flex-start w-100">
+          <img class="rounded-circle shadow-1-strong me-3"
+            src="
+            	{% if user.userprofile %}
+	            	{{ user.userprofile.avatar.url }}
+	            {% else %}
+	            	http://cdn.onlinewebfonts.com/svg/img_264570.png
+	            {% endif %}
+            " alt="avatar" width="40"
+            height="40" />
+
+            <input type="hidden" id="user_id" name="user_id" value="{{ user.id }}">
+            <input type="hidden" id="post_id" name="post_id" value="{{ post.id }}">
+
+          <div class="w-100">
+            <textarea class="form-control" id="comment" rows="4"
+              style="background: #fff;" name="comment" placeholder="Bình luận"></textarea>
+          </div>
+        </div>
+        <div class="float-end mt-2 pt-1">
+          	<button id="submit_comment" type="submit" class="btn btn-dark btn-sm">Đăng</button>
+        </div>
+    </div>
+</form>
+<!-- COMMENT COMMENT BOX -->
+
+<!-- SHOW COMMENT -->
+<div class="row">  
+    <div class="col">
+
+
+		{% for comment in comments %}
+			
+          	<!-- COMMENT 1 -->
+            <div class="d-flex flex-start mt-4">
+
+            	<!-- USER AVATA -->
+              	<img class="rounded-circle shadow-1-strong me-3"
+                src="
+                	{% if comment.author.userprofile %}
+	            		{{ comment.author.userprofile.avatar.url }}
+		            {% else %}
+		            	http://cdn.onlinewebfonts.com/svg/img_264570.png
+		            {% endif %}
+
+                " alt="avatar" width="45" height="45"/>
+                <!-- USER AVATA -->
+
+              <div class="flex-grow-1 flex-shrink-1">
+
+              	<!-- PARENT COMMENT -->
+                <div>
+                  	<div class="d-flex justify-content-between align-items-center">
+
+                  		<!-- USER NAME AND TIME -->
+                        <p class="mb-1">
+                          {{ comment.author.username }} <span class="small">- {{ comment.was_published }}</span>
+                        </p>
+                        <!-- USER NAME AND TIME -->
+
+                        <!-- SHOW REPLY BOX BUTTON -->
+                        <!-- gan comment.id vao hide_tagget -->
+                        <a style="color: #4e4e4e;" href="#!" tagget='{{ comment.id }}' class="toggle_reply_box"><i class="fas fa-reply fa-xs"></i><span class="small"> trả lời</span></a>
+                        <!-- SHOW REPLY BOX BUTTON -->
+
+                  	</div>
+
+                  	<!-- COMMENT BODY -->
+                  	<div class="comment_body" style="word-break: break-word; width: 100%;">
+                      	<p class="small mb-0">
+                        	{{ comment.body }}
+                      	</p>
+                  	</div>
+                  	<!-- COMMENT BODY -->
+                </div>
+                <!-- PARENT COMMENT -->
+
+                <div id="{{ comment.id }}" class="reply_form">
+                	
+                </div>
+
+
+			    {% if comment.comment_set.all %}
+					{% for reply in comment.comment_set.all %}
+
+
+
+			        <!-- REPLY COMMENT 1 (CHILD) -->
+                    <div class="d-flex flex-start mt-4">
+                      <a class="me-3" href="#">
+                        <img class="rounded-circle shadow-1-strong"
+                          src="
+                          	{% if reply.author.userprofile %}
+			            		{{ reply.author.userprofile.avatar.url }}
+				            {% else %}
+				            	http://cdn.onlinewebfonts.com/svg/img_264570.png
+				            {% endif %}
+                          " alt="avatar"
+                          width="35" height="35" />
+                      </a>
+                      <div class="flex-grow-1 flex-shrink-1">
+                        <div>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <p class="mb-1">
+                              {{ reply.author.username }} <span class="small">- {{ reply.was_published }}</span>
+                            </p>
+                          </div>
+                          <p class="small mb-0">
+                            {{ reply.body }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- REPLY COMMENT 1 (CHILD) -->
+					{% endfor %}
+				{% endif %}
+              </div>
+            </div>
+            <!-- COMMENT 1 -->
+    	{% endfor %}
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(".toggle_reply_box").bind('click', function(){
+    	// xóa dữ liệu trong .show_reply_form
+    	$('.show_reply_form').empty();
+
+    	// gỡ class show_reply_form
+    	$('.reply_form').not($('#'+$(this).attr("tagget"))).removeClass('show_reply_form');
+
+
+    	$('#'+$(this).attr("tagget")).toggleClass('show_reply_form');
+
+
+    	
+
+		$.ajax({
+			type: 'POST',
+			url: "{% url 'get_reply_form' %}",
+			data:{
+				parent_id:$(this).attr("tagget"),
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+			},
+			success: function(response){
+				$('.show_reply_form').html(response);
+				$('#reply').focus();
+			},
+			error: function(response){
+				alert("An Error Occured_4")
+			}
+		});
+		
+    });
+
+    function reload_comment(){
+    	$.ajax({
+			type: 'GET',
+			url: "{% url 'get_comment' post.id %}",
+			success: function(response){
+				$("#display_cmt").empty();
+				$("#display_cmt").html(response);
+			},
+			error: function(response){
+				alert("An Error Occured__3");
+			}
+		});
+    }
+
+    function send_comment() {
+	    $.ajax({
+			type: 'POST',
+			url: "{% url 'create_comment' %}",
+			data:{
+				post_id:$('#post_id').val(),
+				user_id:$('#user_id').val(),
+				comment:$('#comment').val(),
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+			},
+			success: function(data){
+				reload_comment();
+			},
+			error: function(response){
+				reload_comment();
+				alert("Bình luận không được để trống");
+			}
+		});
+	    setTimeout('$("#submit_comment").removeAttr("disabled")', 1000);
+	}
+
+
+	$(document).off('submit').on('submit','#pub_comment',function(e){
+		$('#submit_comment').attr("disabled", "disabled");
+		e.preventDefault();
+
+		send_comment();
+
+	});
+
+
+
+</script>
+
+

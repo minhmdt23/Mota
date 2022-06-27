@@ -1,0 +1,190 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+	<style type="text/css">
+		.page-item.active .page-link {
+		    background-color: #262626;
+		}
+		#btn-back-to-top {
+		  	position: fixed;
+		  	bottom: 70px;
+		  	right: 20px;
+		  	display: none;
+		  	background-color: #f9f9f979;
+		}
+	</style>
+
+	<div class="container mt-5">
+	  	<!--Section: Content-->
+	  	<section class="dark-grey-text">
+
+		    <!-- Section heading -->
+		    <h3 class="font-weight-bold mb-5">
+		    	{% if search %}
+		    		Kết quả tìm kiếm cho "{{ search }}":
+		    	{% elif category_choose %}
+		    		Thể loại "{{ category_choose.0.name }}":
+		    	{% else %}
+		    		Tất cả bài viết:
+		    	{% endif %}
+		    </h3>
+
+			{% if posts %}
+				{% for post in page_obj %}
+				    <!-- Grid row -->
+				    <div class="row align-items-center">
+
+				      	<!-- Grid column -->
+				      	<div class="col-lg-5 col-xl-4">
+
+					        <!-- Featured image -->
+					        <div class="view overlay rounded z-depth-1-half mb-lg-0 mb-4">
+					        	<a href="{% url 'post_detail' post.id %}">
+					          		<img class="img-fluid" src="{{ post.image.url }}" alt="Sample image">
+					          	</a>
+					        </div>
+
+				      	</div>
+				      <!-- Grid column -->
+
+				      <!-- Grid column -->
+				      	<div class="col-lg-7 col-xl-8">
+					        <!-- Post title -->
+					        <a href="{% url 'post_detail' post.id %}">
+					        	<h4 class="font-weight-bold mb-3 black-text"><strong>{{ post.title }}</strong></h4>
+					        </a>
+					        <!-- Excerpt -->
+					        <p class="dark-grey-text">{{ post.decription }}</p>
+					        <!-- Post data -->
+					        <p>Đăng bởi <a class="font-weight-bold">{{ post.author.username }}</a>,  {{ post.date_fomat_d_m_y }} </p>
+					        <!-- Read more button --> 
+
+					        <a class="btn btn-lg btn-rounded" href="{% url 'post_detail' post.id %}"><b>Chi tiết</b></a>
+				      	</div>
+				      	<!-- Grid column -->
+				    </div>
+				    <!-- Grid row -->
+
+				    <hr class="my-5">
+				{% endfor %}
+			{% else %}
+				<p>Không tìm thấy bài viết tương ứng</p>
+			{% endif %}
+
+		</section>
+
+
+		<nav aria-label="Page navigation example">
+			<ul class="pagination pg-blue justify-content-center pagination-circle">
+			  	
+			    {% if page_obj_previous.has_previous %}
+				    <!-- TRANG ĐẦU -->
+				    <li class="page-item">
+				      	<a href="?{% if search_text != '' %}search={{ search_text }}&{% endif %}{% if current_category != '' %}category={{ current_category }}&{% endif %}page=1" class="page-link" aria-label="Previous">
+				        	<span aria-hidden="true">&laquo;</span>
+				        	<span class="sr-only">Previous</span>
+				      	</a>
+				    </li>
+				    <!-- TRANG ĐẦU -->
+
+				    <!-- TRƯỚC 2 TRANG -->
+				    <li>
+				      	<a href="?{% if search_text != '' %}search={{ search_text }}&{% endif %}{% if current_category != '' %}category={{ current_category }}&{% endif %}page={{ page_obj_previous.previous_page_number }}" class="page-link" aria-label="Next">
+							{{ page_obj_previous.previous_page_number }}
+				      	</a>
+				    </li>
+				    <!-- TRƯỚC 2 TRANG -->
+			    {% endif %}
+
+				{% if page_obj.has_previous %}
+				    <!-- TRƯỚC 1 TRANG -->
+				    <li class="page-item">
+				      	<a href="?{% if search_text != '' %}search={{ search_text }}&{% endif %}{% if current_category != '' %}category={{ current_category }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+				        	{{ page_obj.previous_page_number }}
+				      	</a>
+				    </li>
+				    <!-- TRƯỚC 1 TRANG -->
+			    {% endif %}
+
+			    <!-- HIỆN TẠI -->
+			    <li class="page-item active"><a class="page-link">{{ page_obj.number }}</a></li>
+			    <!-- HIỆN TẠI -->
+
+			    {% if page_obj.has_next %}
+			    	<!-- SAU 1 TRANG -->
+				    <li>
+				      	<a href="?{% if search_text != '' %}search={{ search_text }}&{% endif %}{% if current_category != '' %}category={{ current_category }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+							{{ page_obj.next_page_number }}
+				      	</a>
+				    </li>
+				    <!-- SAU 1 TRANG -->
+				{% endif %}
+
+			    {% if page_obj_next.has_next %}
+			    	<!-- SAU 2 TRANG -->
+				    <li>
+				      	<a href="?{% if search_text != '' %}search={{ search_text }}&{% endif %}{% if current_category != '' %}category={{ current_category }}&{% endif %}page={{ page_obj_next.next_page_number }}" class="page-link" aria-label="Next">
+							{{ page_obj_next.next_page_number }}
+				      	</a>
+				    </li>
+				    <!-- SAU 2 TRANG -->
+
+				    <!-- TRANG CUỐI -->
+				    <li>
+				      	<a href="?{% if search_text != '' %}search={{ search_text }}&{% endif %}{% if current_category != '' %}category={{ current_category }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="page-link" aria-label="Next">
+				        	<span aria-hidden="true">&raquo;</span>
+				        	<span class="sr-only">{{ page_obj_next.next_page_number }}</span>
+				      	</a>
+				    </li>
+				    <!-- TRANG CUỐI -->
+				{% endif %}
+			    
+			</ul>
+		</nav>
+	</div>
+
+
+
+	<!-- Back to top button -->
+	<button type="button" class="btn btn-light btn-floating btn-lg" id="btn-back-to-top">
+	  	<i class="fas fa-arrow-up"></i>
+	</button>
+
+	<script type="text/javascript">
+		//Get the button
+		let mybutton = document.getElementById("btn-back-to-top");
+
+		// When the user scrolls down 20px from the top of the document, show the button
+		window.onscroll = function () {
+		  scrollFunction();
+		};
+
+		function scrollFunction() {
+		  if (
+		    document.body.scrollTop > 20 ||
+		    document.documentElement.scrollTop > 20
+		  ) {
+		    mybutton.style.display = "block";
+		  } else {
+		    mybutton.style.display = "none";
+		  }
+		}
+		// When the user clicks on the button, scroll to the top of the document
+		mybutton.addEventListener("click", backToTop);
+
+		function backToTop() {
+		  document.body.scrollTop = 0;
+		  document.documentElement.scrollTop = 0;
+		}
+	</script>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,62 @@
+<form method="POST" id="pub_reply">
+	{% csrf_token %}
+	<input type="hidden" id="parent_id" name="parent_id" value="{{ parent_comment.id }}">
+	<input type="hidden" id="post_id" name="post_id" value="{{ parent_comment.post.id }}">
+	<input type="hidden" id="user_id" name="user_id" value="{{ user.id }}">
+    <!-- REPLY BOX -->
+    <!-- gan comment.id vao id -->
+    <div class="card-footer py-3 border-0 mb-5 reply_box" style="background-color: #f8f9fa;">
+        <div class="d-flex flex-start w-100">
+          <img class="rounded-circle shadow-1-strong me-3"
+            src="
+            	{% if user.userprofile %}
+            		{{ user.userprofile.avatar.url }}
+	            {% else %}
+	            	http://cdn.onlinewebfonts.com/svg/img_264570.png
+	            {% endif %}
+            " alt="avatar" width="25"
+            height="25" />
+          <div class="w-100">
+            <textarea id="reply" class="form-control" rows="2" style="background: #fff;" placeholder="Trả lời"></textarea>
+          </div>
+        </div>
+        <div class="float-end mt-2 pt-1">
+          <button id="submit_reply" type="submit" class="btn btn-dark btn-sm">Đăng</button>
+        </div>
+    </div>
+    <!-- REPLY BOX -->
+</form>
+
+
+
+<script type="text/javascript">
+
+	function send_reply(){
+		$.ajax({
+			type: 'POST',
+			url: "{% url 'create_comment' %}",
+			data:{
+				post_id:$('#post_id').val(),
+				user_id:$('#user_id').val(),
+				comment:$('#reply').val(),
+				parent_id:$('#parent_id').val(),
+				csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+			},
+			success: function(data){
+				reload_comment();
+			},
+			error: function(response){
+				reload_comment();
+				alert("Bình luận không được để trống");
+			}
+		});
+
+		setTimeout('$("#submit_reply").removeAttr("disabled")', 1000);
+	}
+	
+		$(document).off('submit').on('submit','#pub_reply',function(e){
+			$('#submit_reply').attr("disabled", "disabled");
+			e.preventDefault();
+			send_reply();
+		});
+</script>
